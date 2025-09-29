@@ -1,167 +1,108 @@
-// ====================================
-// 📁 FILE: App.tsx
-// 🎯 PURPOSE: This is the main file that controls the entire app
-// 💡 WHAT IT DOES: Manages which screen to show and handles all the logic
-// 🔧 FOR BEGINNERS: Think of this as the "brain" that coordinates everything
-// ====================================
+import { useState } from "react";
+import { useAccount, useModal, useWallet, useSignMessage } from "@getpara/react-sdk";
+import { Header } from "./components/layout/Header";
+import { StatusAlert } from "./components/ui/StatusAlert";
+import { ConnectWalletCard } from "./components/ui/ConnectWalletCard";
+import { SignMessageForm } from "./components/ui/SignMessageForm";
+import { SignatureDisplay } from "./components/ui/SignatureDisplay";
 
-import React, { useState } from 'react';
+export default function Home() {
+  const [message, setMessage] = useState("Hello Para!");
+  const { openModal } = useModal();
+  const { isConnected } = useAccount();
+  const { data: wallet } = useWallet();
+  const signMessageHook = useSignMessage();
 
-// Import all our custom components (these are actual components)
-import ConnectWalletScreen from './Components/ConnectWalletScreen';
-import WalletSelectModal from './Components/WalletSelectModal';
-import DashboardScreen from './Components/DashboardScreen';
+  const address = wallet?.address;
 
-// Import types using type-only import (these are just TypeScript blueprints)
-import type { WalletState, ProtocolStats, ChartDataPoint, ViewType, WalletType } from './Components/types';
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-// This is the main App component that controls everything
-const App: React.FC = () => {
-  // State management for UI navigation - which screen should we show?
-  const [currentView, setCurrentView] = useState<ViewType>('connect');
+    if (!isConnected || !wallet?.id) {
+      return;
+    }
 
-  // State for wallet connection info
-  const [walletState, setWalletState] = useState<WalletState>({
-    connected: false,
-    address: null,
-    provider: null
-  });
-
-  // Hardcoded data for v1 - TODO: Replace with real-time data integration
-  const protocolStats: ProtocolStats = {
-    tvlLocked: '$719,463.25',     // Total money locked in the protocol
-    totalSupply: '$30,411.15',    // Total fUSD tokens that exist
-    burnedTokens: '$0.00 0K',     // How many tokens have been destroyed
-    contractHealth: 'Healthy'     // Is the smart contract working well?
+    signMessageHook.signMessage({
+      walletId: wallet.id,
+      messageBase64: btoa(message),
+    });
   };
 
-  // Market overview chart data - TODO: Integrate with real market data API
-  const chartData: ChartDataPoint[] = [
-    { date: 'W1', value: 240 },   // Week 1 data
-    { date: 'W2', value: 280 },   // Week 2 data
-    { date: 'W3', value: 320 },   // Week 3 data
-    { date: 'W4', value: 300 },   // Week 4 data
-    { date: 'W5', value: 380 },   // Week 5 data
-    { date: 'W6', value: 420 },   // Week 6 data
-    { date: 'W7', value: 450 }    // Week 7 data
-  ];
-
-  // Function to handle when user clicks "Connect Wallet"
-  const handleConnectWallet = () => {
-    setCurrentView('wallet-select'); // Show the wallet selection popup
-  };
-
-  // Function to handle when user selects a specific wallet
-  const handleWalletSelect = async (walletType: WalletType) => {
-    try {
-      // TODO: Implement actual wallet connection logic
-      // Example integration points:
-      // - MetaMask: window.ethereum.request({ method: 'eth_requestAccounts' })
-      // - Rabby: Similar to MetaMask but with rabby-specific provider
-      // - Leap: Cosmos-based wallet integration
-      // - Social logins: OAuth flows for Google/Apple
-
-      console.log(`Connecting to ${walletType}...`);
-
-      // Simulate wallet connection (replace this with real wallet connection)
-      setWalletState({
-        connected: true,
-        address: '0x1234...5678', // TODO: Get real address from wallet
-        provider: walletType
-      });
-
-      setCurrentView('dashboard'); // Show the main dashboard
-    } catch (error) {
-      console.error('Wallet connection failed:', error);
-      // TODO: Add error handling UI (show error message to user)
+  const handleMessageChange = (value: string) => {
+    setMessage(value);
+    if (signMessageHook.data) {
+      signMessageHook.reset();
     }
   };
 
-  // Function to close the wallet selection popup
-  const handleCloseWalletSelect = () => {
-    setCurrentView('connect'); // Go back to the connect screen
+  const status = {
+    show: signMessageHook.isPending || !!signMessageHook.error || !!signMessageHook.data,
+    type: signMessageHook.isPending
+      ? ("info" as const)
+      : signMessageHook.error
+      ? ("error" as const)
+      : ("success" as const),
+    message: signMessageHook.isPending
+      ? "Signing message..."
+      : signMessageHook.error
+      ? signMessageHook.error.message || "Failed to sign message. Please try again."
+      : "Message signed successfully!",
   };
 
-  // Smart contract interaction handlers
-  const handleMintTokens = async (amount: string) => {
-    try {
-      // TODO: Integrate with smart contract
-      // Example: contract.mint(amount, { from: walletState.address })
-      console.log(`Minting ${amount} fUSD tokens...`);
-
-      // Add transaction logic here:
-      // 1. Validate input amount (is it a valid number?)
-      // 2. Check user balance for collateral (do they have enough ETH?)
-      // 3. Call smart contract mint function
-      // 4. Update UI with transaction status (show loading spinner)
-      // 5. Refresh protocol stats after successful mint
-
-    } catch (error) {
-      console.error('Minting failed:', error);
-      // TODO: Add error handling UI (show error message to user)
-    }
-  };
-
-  // Function to handle when user wants to burn/destroy tokens
-  const handleBurnTokens = async (amount: string) => {
-    try {
-      // TODO: Integrate with smart contract
-      // Example: contract.burn(amount, { from: walletState.address })
-      console.log(`Burning ${amount} fUSD tokens...`);
-
-      // Add transaction logic here:
-      // 1. Validate input amount (is it a valid number?)
-      // 2. Check user fUSD balance (do they have enough tokens to burn?)
-      // 3. Call smart contract burn function
-      // 4. Update UI with transaction status (show loading spinner)
-      // 5. Refresh protocol stats after successful burn
-
-    } catch (error) {
-      console.error('Burning failed:', error);
-      // TODO: Add error handling UI (show error message to user)
-    }
-  };
-
-  // This decides which screen/component to show based on currentView
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'connect':
-        // Show the first screen with "Connect Wallet" button
-        return <ConnectWalletScreen onConnectClick={handleConnectWallet} />;
-
-      case 'wallet-select':
-        // Show the popup with wallet options
-        return (
-          <WalletSelectModal
-            onWalletSelect={handleWalletSelect}
-            onClose={handleCloseWalletSelect}
-          />
-        );
-
-      case 'dashboard':
-        // Show the main dashboard with charts and mint/burn buttons
-        return (
-          <DashboardScreen
-            walletState={walletState}
-            protocolStats={protocolStats}
-            chartData={chartData}
-            onMintTokens={handleMintTokens}
-            onBurnTokens={handleBurnTokens}
-          />
-        );
-
-      default:
-        // If something goes wrong, show the connect screen
-        return <ConnectWalletScreen onConnectClick={handleConnectWallet} />;
-    }
-  };
-
-  // This is what gets displayed on the webpage
   return (
-    <div className="App">
-      {renderCurrentView()}
-    </div>
-  );
-};
+    <>
+      <Header />
 
-export default App;
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tight mb-4">Para Custom Auth Demo</h1>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Sign messages with your Para wallet using email, phone, or social authentication. This demonstrates using
+            Para's web-sdk with native React components and a unified authentication flow.
+          </p>
+        </div>
+
+        {!isConnected ? (
+          <div data-testid="not-logged-in">
+            <ConnectWalletCard onConnect={openModal} />
+          </div>
+        ) : (
+          <div
+            className="max-w-xl mx-auto"
+            data-testid="wallet-connected">
+            <div className="mb-8 rounded-none border border-gray-200">
+              <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
+                <h3 className="text-sm font-medium text-gray-900">Connected Wallet</h3>
+              </div>
+              <div className="px-6 py-3">
+                <p className="text-sm text-gray-500">Address</p>
+                <p
+                  className="text-lg font-medium text-gray-900 font-mono"
+                  data-testid="wallet-address">
+                  {address?.slice(0, 6)}...{address?.slice(-4)}
+                </p>
+              </div>
+            </div>
+
+            <StatusAlert
+              show={status.show}
+              type={status.type}
+              message={status.message}
+            />
+
+            <SignMessageForm
+              message={message}
+              isLoading={signMessageHook.isPending}
+              onMessageChange={handleMessageChange}
+              onSubmit={handleSubmit}
+            />
+
+            {signMessageHook.data && "signature" in signMessageHook.data && (
+              <SignatureDisplay signature={signMessageHook.data.signature} />
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
