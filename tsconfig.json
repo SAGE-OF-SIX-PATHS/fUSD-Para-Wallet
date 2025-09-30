@@ -16,7 +16,10 @@
       "@/*": [
         "src/*"
       ]
-    }
+    },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": true
   },
   "include": [
     "src"

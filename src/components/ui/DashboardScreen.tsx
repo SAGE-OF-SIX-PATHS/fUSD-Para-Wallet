@@ -5,7 +5,8 @@
 // 🔧 FOR BEGINNERS: This is like the "control panel" where users do the actual token operations
 // ====================================
 
-import React, { useState } from 'react';
+import { useState } from "react";
+
 import { TrendingUp, Activity, Shield } from 'lucide-react';
 import type { WalletState, ProtocolStats, ChartDataPoint } from './types';
 
@@ -100,9 +101,10 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({
                                                                                 />
                                                                       </svg>
                                                                       <div className="flex justify-between text-xs text-slate-500 mt-2">
-                                                                                {chartData.map((point:number, idx:number) => (
+                                                                                {chartData.map((point: ChartDataPoint, idx: number) => (
                                                                                           <span key={idx}>{point.date}</span>
                                                                                 ))}
+
                                                                       </div>
                                                             </div>
                                                   </div>
