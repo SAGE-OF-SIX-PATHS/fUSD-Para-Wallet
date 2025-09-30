@@ -5,6 +5,7 @@ import { StatusAlert } from "./components/ui/StatusAlert";
 import { ConnectWalletCard } from "./components/ui/ConnectWalletCard";
 import { SignMessageForm } from "./components/ui/SignMessageForm";
 import { SignatureDisplay } from "./components/ui/SignatureDisplay";
+import { DashboardScreen } from "./components/ui/DashboardScreen"
 
 export default function Home() {
   const [message, setMessage] = useState("Hello Para!");
