@@ -25,7 +25,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({
           chartData,
           onMintTokens,
           onBurnTokens
-}) => {
+}:any) => {
           // State to track what the user types in the input boxes
           const [mintAmount, setMintAmount] = useState('');
           const [burnAmount, setBurnAmount] = useState('');
@@ -100,7 +100,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({
                                                                                 />
                                                                       </svg>
                                                                       <div className="flex justify-between text-xs text-slate-500 mt-2">
-                                                                                {chartData.map((point, idx) => (
+                                                                                {chartData.map((point:number, idx:number) => (
                                                                                           <span key={idx}>{point.date}</span>
                                                                                 ))}
                                                                       </div>

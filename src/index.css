@@ -1,3 +1,18 @@
 @import "tailwindcss/preflight";
 @import "tailwindcss/theme";
 @import "tailwindcss/utilities";
+
+/* Custom dark theme */
+:root {
+          --color-bg: #0a0a0f;
+          /* deep dark */
+          --color-card: #1a1a24;
+          /* card dark */
+          --color-accent-pink: #ec4899;
+          --color-accent-purple: #8b5cf6;
+          --color-text: #f3f4f6;
+}
+
+body {
+          @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased;
+}
