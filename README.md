@@ -24,12 +24,53 @@ const CONTRACTS = {
 
 ### 5-Minute Setup
 
-Install dependencies:
+# fUSD-Para-Wallet
+
+## Setup
+
+1. **Clone the repository**
+
 ```bash
-npm install ethers viem
-# or
-npm install web3
+git clone git@github.com:SAGE-OF-SIX-PATHS/fUSD-Para-Wallet.git
+cd fUSD-Para-Wallet
 ```
+
+2. **Install dependencies**
+
+```bash
+npm install
+# or
+pnpm install
+```
+
+3. **Install Solana wallet adapter (if missing)**
+
+```bash
+pnpm add @solana/wallet-adapter-base
+# or
+npm install @solana/wallet-adapter-base
+```
+
+4. **Start the development server**
+
+```bash
+npm run dev
+# or
+pnpm dev
+```
+
+---
+
+## Troubleshooting
+
+If you see an error like:
+
+```
+[vite] Pre-transform error: Failed to resolve import "@solana/wallet-adapter-base" from "src/context/ParaProvider.tsx"
+```
+
+It means the `@solana/wallet-adapter-base` package is missing. Installing it as shown above should fix the issue.
+
 
 ## Smart Contract Integration
 
